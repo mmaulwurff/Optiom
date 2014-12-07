@@ -3,6 +3,18 @@ About
 
 Optiom is graphical program for *ini files configuration.
 
+Usage
+-----
+
+Optiom reads all *ini files in current directory.
+Changes in fields are immediately written to corresponding files, no saving required.
+
+Optiom understands field types by beginning of field name:
+ - "num" are numeric fields (from 0 to large integers). Example: num_bytes, numberOfBirds
+ - "per" are percent fields (from 0 to 100). Example: percentHealth
+ - "is_" are boolen fields (true/false). Example: is_feature_on
+ - other beginnigs represent text fields.
+
 Compiling
 ---------
 

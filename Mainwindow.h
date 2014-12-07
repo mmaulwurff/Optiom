@@ -17,10 +17,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private:
-    Ui::MainWindow *ui;
+private slots:
+    void loadTabs();
 
+private:
+    Ui::MainWindow * const ui;
     QList<QSettings *> settingsList;
+
+    static QString makeGroupName(QString groupName);
 };
 
 #endif // MAINWINDOW_H
