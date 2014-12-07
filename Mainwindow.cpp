@@ -10,6 +10,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QScrollArea>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget * const parent) :
     QMainWindow(parent),
@@ -20,8 +21,11 @@ MainWindow::MainWindow(QWidget * const parent) :
     loadTabs();
 
     ui->actionReload->setShortcut(QKeySequence::Refresh);
-    connect(ui->actionReload, &QAction::triggered, this, &MainWindow::loadTabs);
-    connect(ui->actionClose,  &QAction::triggered, &QApplication::quit);
+
+    connect(ui->actionClose,    &QAction::triggered, &QApplication::quit);
+    connect(ui->actionReload,   &QAction::triggered, this, &MainWindow::loadTabs);
+    connect(ui->actionAbout ,   &QAction::triggered, this, &MainWindow::showAbout);
+    connect(ui->actionAbout_Qt, &QAction::triggered, this, &MainWindow::showAboutQt);
 }
 
 void MainWindow::loadTabs() {
@@ -85,10 +89,21 @@ void MainWindow::loadTabs() {
     }
 }
 
+void MainWindow::showAbout()
+{
+    QFile readmeFile(":/README.md");
+    readmeFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    QMessageBox::about(this, "About Optiom", readmeFile.readAll());
+}
+
+void MainWindow::showAboutQt()
+{
+    QMessageBox::aboutQt(this, "Optiom");
+}
+
 QString MainWindow::makeGroupName(const QString groupName)
 {
     return (groupName == "General") ? "" : (groupName + "/");
-
 }
 
 MainWindow::~MainWindow()

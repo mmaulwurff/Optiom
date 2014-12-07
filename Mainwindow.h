@@ -19,6 +19,8 @@ public:
 
 private slots:
     void loadTabs();
+    void showAbout();
+    void showAboutQt();
 
 private:
     Ui::MainWindow * const ui;

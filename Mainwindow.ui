@@ -61,7 +61,15 @@
     <addaction name="actionReload"/>
     <addaction name="actionClose"/>
    </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionAbout_Qt"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionClose">
@@ -72,6 +80,21 @@
   <action name="actionReload">
    <property name="text">
     <string>&amp;Reload</string>
+   </property>
+  </action>
+  <action name="actionCopying">
+   <property name="text">
+    <string>&amp;Copying</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About Optiom</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt">
+   <property name="text">
+    <string>About &amp;Qt</string>
    </property>
   </action>
  </widget>
