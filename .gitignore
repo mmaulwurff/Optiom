@@ -1,0 +1,11 @@
+*
+!.gitignore
+!*pro
+!*.cpp
+!*.h
+!*.ts
+!*.md
+!*.qrc
+!*.qm
+ui_*
+qrc_*.cpp
