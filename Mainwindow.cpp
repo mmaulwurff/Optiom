@@ -31,7 +31,8 @@ MainWindow::MainWindow(QWidget * const parent) :
 void MainWindow::loadTabs() {
     ui->tabWidget->clear();
 
-    for (const QString fileName : QDir::current().entryList(QStringList("*.ini"))) {
+    QStringList fileList;
+    for (const QString fileName : addFiles(".", fileList)) {
         QVBoxLayout * const layout = new QVBoxLayout;
 
         QSettings * const setting = new QSettings(fileName, QSettings::IniFormat);
@@ -85,7 +86,7 @@ void MainWindow::loadTabs() {
         QScrollArea * const scrollArea = new QScrollArea;
         scrollArea->setWidget(tabWidget);
         scrollArea->setWidgetResizable(true);
-        ui->tabWidget->addTab(scrollArea, fileName);
+        ui->tabWidget->addTab(scrollArea, fileName.right(fileName.length() - 2));
     }
 }
 
@@ -99,6 +100,25 @@ void MainWindow::showAbout()
 void MainWindow::showAboutQt()
 {
     QMessageBox::aboutQt(this, "Optiom");
+}
+
+QStringList & MainWindow::addFiles(const QString path, QStringList & list)
+{
+    QStringList fileList = QDir(path).entryList(QStringList("*.ini"));
+    QStringList pathList;
+    for (const QString fileName : fileList) {
+        pathList << path + "/" + fileName;
+    }
+    list << pathList;
+    for (const QString fileName : QDir(path).entryList()) {
+        if (fileName == "." || fileName == "..") continue;
+
+        const QString currentPath = path + "/" + fileName;
+        if (QFileInfo(currentPath).isDir()) {
+            addFiles(currentPath, list);
+        }
+    }
+    return list;
 }
 
 QString MainWindow::makeGroupName(const QString groupName)

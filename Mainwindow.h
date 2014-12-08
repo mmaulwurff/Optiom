@@ -27,6 +27,7 @@ private:
     QList<QSettings *> settingsList;
 
     static QString makeGroupName(QString groupName);
+    static QStringList& addFiles(QString path, QStringList& list);
 };
 
 #endif // MAINWINDOW_H
