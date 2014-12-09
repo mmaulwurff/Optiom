@@ -5,19 +5,21 @@ Optiom is a *ini configuration/settings manager.
 
 Implemented with Qt.
 
+![Screenshot](http://habrastorage.org/files/7e0/73f/c5b/7e073fc5b5f6427aabf12dc3f5d78e77.PNG)
+
 Usage
 -----
 
 Features:
-1. Reads all *ini files in current directory and its subdirectories.
-2. Changes in fields are immediately written to corresponding files, no saving required.
-3. File backup/restore feature.
-4. Understands one level of *ini settings groups.
-5. Optiom understands field types by beginning of field name:
-    - "num" - numeric fields (from 0 to large integers), e.g. num_bytes, numberOfBytes
-    - "per" - percent fields (from 0 to 100), e.g. percentHealth
-    - "is_" - boolean fields (true/false), e.g. is_feature_on
-    - other - text fields.
+- Reads all *ini files in current directory and its subdirectories.
+- Changes in fields are immediately written to corresponding files, no saving required.
+- File backup/restore feature.
+- Understands one level of *ini settings groups.
+- Optiom understands field types by beginning of field name:
+    * "num" - numeric fields (from 0 to large integers), e.g. num_bytes, numberOfBytes
+    * "per" - percent fields (from 0 to 100), e.g. percentHealth
+    * "is_" - boolean fields (true/false), e.g. is_feature_on
+    * other - text fields.
 
 [Source code is available at GitHub](https://github.com/mmaulwurff/Optiom)
 
