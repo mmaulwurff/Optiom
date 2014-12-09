@@ -5,7 +5,7 @@ Optiom is a *ini configuration/settings manager.
 
 Implemented with Qt.
 
-![Screenshot](http://habrastorage.org/files/7e0/73f/c5b/7e073fc5b5f6427aabf12dc3f5d78e77.PNG)
+![Screenshot](http://habrastorage.org/files/416/8c9/1e6/4168c91e6f794c03a6245696911a6a13.PNG)
 
 Usage
 -----
