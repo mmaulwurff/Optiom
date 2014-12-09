@@ -13,18 +13,20 @@
 #include <QMessageBox>
 #include <QFileSystemModel>
 
+const QString backupSuffix = ".backup";
+
 MainWindow::MainWindow(QWidget * const parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     setting(nullptr),
-    settingWidget(nullptr)
+    settingWidget(nullptr),
+    fileSystemModel(new QFileSystemModel)
 {
     ui->setupUi(this);
     setWindowTitle(QDir::currentPath());
 
     ui->actionReload->setShortcut(QKeySequence::Refresh);
 
-    QFileSystemModel * const fileSystemModel = new QFileSystemModel;
     fileSystemModel->setNameFilters(QStringList("*.ini"));
     fileSystemModel->setNameFilterDisables(false);
     fileSystemModel->setRootPath(QDir::currentPath());
@@ -36,12 +38,38 @@ MainWindow::MainWindow(QWidget * const parent) :
     connect(ui->treeView, &QTreeView::activated, ui->treeView, &QTreeView::clicked);
     connect(ui->treeView, &QTreeView::clicked,
             [=](const QModelIndex & index) {
-        loadSetting(fileSystemModel->filePath(index));
+        if (not QFileInfo(fileSystemModel->filePath(index)).isDir()) {
+            loadSetting(fileSystemModel->filePath(index));
+        }
+    });
+    connect(ui->treeView, &QTreeView::clicked,
+            [=](const QModelIndex & index) {
+        const QString fileName = fileSystemModel->filePath(index);
+        const bool disable = QFileInfo(fileName).isDir();
+        ui->action_Backup->setDisabled(disable);
+        ui->action_Restore->setDisabled(disable || not QFile::exists(fileName + backupSuffix));
     });
 
-    connect(ui->actionReload,   &QAction::triggered,
+    connect(ui->actionReload, &QAction::triggered,
+            [=]() { loadSetting(getSelectedFilePath()); });
+
+    connect(ui->action_Backup, &QAction::triggered,
             [=]() {
-       loadSetting(fileSystemModel->filePath(ui->treeView->selectionModel()->selectedIndexes().at(0)));
+        const QString fileName = getSelectedFilePath();
+        const QString backupName = fileName + backupSuffix;
+        if (QFile::exists(backupName)) {
+            QFile::remove(backupName);
+        }
+        QFile::copy(fileName, backupName);
+        ui->statusBar->showMessage(tr("Backup \"%1\" created.").arg(backupName));
+    });
+    connect(ui->action_Restore, &QAction::triggered,
+            [=]() {
+        const QString fileName = getSelectedFilePath();
+        QFile::remove(fileName);
+        QFile::copy(fileName + ".backup", fileName);
+        loadSetting(fileName);
+        ui->statusBar->showMessage(tr("Backup \"%1\" loaded.").arg(fileName + backupSuffix));
     });
 
     connect(ui->actionClose,    &QAction::triggered, &QApplication::quit);
@@ -49,7 +77,13 @@ MainWindow::MainWindow(QWidget * const parent) :
     connect(ui->actionAbout_Qt, &QAction::triggered, this, &MainWindow::showAboutQt);
 }
 
+QString MainWindow::getSelectedFilePath() const {
+    return fileSystemModel->filePath(ui->treeView->selectionModel()->selectedIndexes().at(0));
+}
+
 void MainWindow::loadSetting(const QString fileName) {
+    ui->statusBar->showMessage("");
+
     QVBoxLayout * const layout = new QVBoxLayout;
 
     delete setting;

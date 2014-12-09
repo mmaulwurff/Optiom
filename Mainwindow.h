@@ -8,6 +8,7 @@ class MainWindow;
 }
 
 class QSettings;
+class QFileSystemModel;
 
 class MainWindow : public QMainWindow
 {
@@ -26,9 +27,13 @@ private:
     Ui::MainWindow * const ui;
     QSettings * setting;
     QWidget * settingWidget;
+    QFileSystemModel * const fileSystemModel;
 
     static QString makeGroupName(QString groupName);
     static QStringList& addFiles(QString path, QStringList& list);
+
+    QString getSelectedFilePath() const;
+
 };
 
 #endif // MAINWINDOW_H

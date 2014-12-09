@@ -60,7 +60,15 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
+   <widget class="QMenu" name="menuBackups">
+    <property name="title">
+     <string>&amp;Backups</string>
+    </property>
+    <addaction name="action_Backup"/>
+    <addaction name="action_Restore"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuBackups"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -87,6 +95,22 @@
   <action name="actionAbout_Qt">
    <property name="text">
     <string>About &amp;Qt</string>
+   </property>
+  </action>
+  <action name="action_Backup">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Backup</string>
+   </property>
+  </action>
+  <action name="action_Restore">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Restore</string>
    </property>
   </action>
  </widget>
