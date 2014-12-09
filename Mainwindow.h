@@ -18,13 +18,14 @@ public:
     ~MainWindow();
 
 private slots:
-    void loadTabs();
+    void loadSetting(QString path);
     void showAbout();
     void showAboutQt();
 
 private:
     Ui::MainWindow * const ui;
-    QList<QSettings *> settingsList;
+    QSettings * setting;
+    QWidget * settingWidget;
 
     static QString makeGroupName(QString groupName);
     static QStringList& addFiles(QString path, QStringList& list);
