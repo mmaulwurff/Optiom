@@ -103,8 +103,8 @@ void MainWindow::loadSetting(const QString fileName) {
             const QString type = key.left(3);
             if (type == "num" || type == "per") {
                 QSpinBox * const spinBox = new QSpinBox;
-                spinBox->setValue(setting->value(key).toInt());
                 spinBox->setMaximum((type == "per") ? 100 : std::numeric_limits<int>::max());
+                spinBox->setValue(setting->value(key).toInt());
                 connect(spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
                     [=](const int newValue) {
                     setting->setValue(makeGroupName(groupName) + key, newValue);
