@@ -1,17 +1,8 @@
 #include "Mainwindow.h"
 #include "ui_Mainwindow.h"
-#include <QDir>
-#include <QDebug>
-#include <QSettings>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QCheckBox>
-#include <QScrollArea>
-#include <QMessageBox>
-#include <QFileSystemModel>
+#include "KeyStrings.h"
+#include "KeyInputBox.h"
+#include <QtWidgets>
 
 const QString backupSuffix = ".backup";
 
@@ -117,6 +108,28 @@ void MainWindow::loadSetting(const QString fileName) {
                     setting->setValue(makeGroupName(groupName) + key, (state == Qt::Checked));
                 });
                 lineLayout->addWidget(checkBox);
+            } else if (type == "key") {
+                QLabel * const keyLabel = new QLabel(setting->value(key, NoKey).toString());
+                QPushButton * const setButton = new QPushButton("Set");
+
+                QPushButton * const removeButton = new QPushButton("Remove");
+                connect(removeButton, &QPushButton::clicked, [=]() {
+                    setting->setValue(makeGroupName(groupName) + key, "");
+                    keyLabel->setText(NoKey);
+                });
+
+                connect(setButton, &QPushButton::clicked, [=]() {
+                    const int newKey = KeyInputBox::GetKey(this);
+                    if (newKey) {
+                        const QString newValue = GetKeyString(newKey);
+                        setting->setValue(makeGroupName(groupName) + key, newValue);
+                        keyLabel->setText(newValue);
+                    }
+                });
+
+                lineLayout->addWidget(keyLabel);
+                lineLayout->addWidget(setButton);
+                lineLayout->addWidget(removeButton);
             } else {
                 QLineEdit * const lineEdit = new QLineEdit(setting->value(key).toString());
                 lineEdit->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed));

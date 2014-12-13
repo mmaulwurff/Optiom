@@ -14,9 +14,12 @@ TEMPLATE = app
 QMAKE_CXXFLAGS += -std=c++11 -Wall -pedantic
 
 SOURCES += main.cpp\
-        Mainwindow.cpp
+    Mainwindow.cpp \
+    KeyInputBox.cpp \
 
-HEADERS  += Mainwindow.h
+HEADERS  += Mainwindow.h \
+    KeyStrings.h \
+    KeyInputBox.h \
 
 FORMS    += Mainwindow.ui
 

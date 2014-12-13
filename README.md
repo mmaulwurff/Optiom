@@ -19,6 +19,7 @@ Features:
     * "num" - numeric fields (from 0 to large integers), e.g. num_bytes, numberOfBytes
     * "per" - percent fields (from 0 to 100), e.g. percentHealth
     * "is_" - boolean fields (true/false), e.g. is_feature_on
+    * "key" - keyboard key field, e.g. A-Z, Ctrl, Enter
     * other - text fields.
 
 [Source code is available at GitHub](https://github.com/mmaulwurff/Optiom)
