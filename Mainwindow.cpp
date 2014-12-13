@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget * const parent) :
         const bool disable = QFileInfo(fileName).isDir();
         ui->action_Backup->setDisabled(disable);
         ui->action_Restore->setDisabled(disable || not QFile::exists(fileName + backupSuffix));
+        ui->actionCopy_file_to_clipboard->setDisabled(disable);
     });
 
     connect(ui->actionReload, &QAction::triggered,
@@ -61,6 +62,15 @@ MainWindow::MainWindow(QWidget * const parent) :
         QFile::copy(fileName + ".backup", fileName);
         loadSetting(fileName);
         ui->statusBar->showMessage(tr("Backup \"%1\" loaded.").arg(fileName + backupSuffix));
+    });
+
+    connect(ui->actionCopy_file_to_clipboard, &QAction::triggered,
+            [=]() {
+        QFile settingsFile(getSelectedFilePath());
+        if (settingsFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QString contents(settingsFile.readAll());
+            QApplication::clipboard()->setText(contents);
+        }
     });
 
     connect(ui->actionClose,    &QAction::triggered, &QApplication::quit);
