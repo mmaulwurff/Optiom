@@ -70,11 +70,12 @@ MainWindow::MainWindow(QWidget * const parent) :
         if (settingsFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QString contents(settingsFile.readAll());
             QApplication::clipboard()->setText(contents);
+            ui->statusBar->showMessage("File is copied to clipboard.", 2000);
         }
     });
 
     connect(ui->actionClose,    &QAction::triggered, &QApplication::quit);
-    connect(ui->actionAbout ,   &QAction::triggered, this, &MainWindow::showAbout);
+    connect(ui->actionAbout,    &QAction::triggered, this, &MainWindow::showAbout);
     connect(ui->actionAbout_Qt, &QAction::triggered, this, &MainWindow::showAboutQt);
 }
 
@@ -83,8 +84,6 @@ QString MainWindow::getSelectedFilePath() const {
 }
 
 void MainWindow::loadSetting(const QString fileName) {
-    ui->statusBar->showMessage("");
-
     QVBoxLayout * const layout = new QVBoxLayout;
 
     delete setting;
@@ -101,21 +100,22 @@ void MainWindow::loadSetting(const QString fileName) {
             lineLayout->addWidget(new QLabel(key));
 
             const QString type = key.left(3);
+            const QString keyName = makeGroupName(groupName) + key;
             if (type == "num" || type == "per") {
                 QSpinBox * const spinBox = new QSpinBox;
                 spinBox->setMaximum((type == "per") ? 100 : std::numeric_limits<int>::max());
                 spinBox->setValue(setting->value(key).toInt());
                 connect(spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-                    [=](const int newValue) {
-                    setting->setValue(makeGroupName(groupName) + key, newValue);
+                        [=](const int newValue) {
+                    setting->setValue(keyName, newValue);
                 });
                 lineLayout->addWidget(spinBox);
             } else if (type == "is_") {
                 QCheckBox * const checkBox = new QCheckBox;
                 checkBox->setChecked(setting->value(key).toBool());
                 connect(checkBox, &QCheckBox::stateChanged,
-                    [=](const int state) {
-                    setting->setValue(makeGroupName(groupName) + key, (state == Qt::Checked));
+                        [=](const int state) {
+                    setting->setValue(keyName, (state == Qt::Checked));
                 });
                 lineLayout->addWidget(checkBox);
             } else if (type == "key") {
@@ -123,16 +123,18 @@ void MainWindow::loadSetting(const QString fileName) {
                 QPushButton * const setButton = new QPushButton("Set");
 
                 QPushButton * const removeButton = new QPushButton("Remove");
-                connect(removeButton, &QPushButton::clicked, [=]() {
-                    setting->setValue(makeGroupName(groupName) + key, "");
+                connect(removeButton, &QPushButton::clicked,
+                        [=]() {
+                    setting->setValue(keyName, NoKey);
                     keyLabel->setText(NoKey);
                 });
 
-                connect(setButton, &QPushButton::clicked, [=]() {
+                connect(setButton, &QPushButton::clicked,
+                        [=]() {
                     const int newKey = KeyInputBox::GetKey(this);
                     if (newKey) {
                         const QString newValue = GetKeyString(newKey);
-                        setting->setValue(makeGroupName(groupName) + key, newValue);
+                        setting->setValue(keyName, newValue);
                         keyLabel->setText(newValue);
                     }
                 });
@@ -144,8 +146,8 @@ void MainWindow::loadSetting(const QString fileName) {
                 QLineEdit * const lineEdit = new QLineEdit(setting->value(key).toString());
                 lineEdit->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed));
                 connect(lineEdit, &QLineEdit::textEdited,
-                    [=](const QString &newValue) {
-                    setting->setValue(makeGroupName(groupName) + key, newValue);
+                        [=](const QString &newValue) {
+                    setting->setValue(keyName, newValue);
                 });
                 lineLayout->addWidget(lineEdit);
             }
@@ -161,27 +163,25 @@ void MainWindow::loadSetting(const QString fileName) {
     settingWidget->setLayout(layout);
     ui->scrollArea->setWidget(settingWidget);
     ui->scrollArea->setWidgetResizable(true);
+
+    ui->statusBar->showMessage(QString("File \"%1\" loaded.").arg(fileName), 2000);
 }
 
-void MainWindow::showAbout()
-{
+void MainWindow::showAbout() {
     QFile readmeFile(":/README.md");
     readmeFile.open(QIODevice::ReadOnly | QIODevice::Text);
     QMessageBox::about(this, "About Optiom", readmeFile.readAll());
 }
 
-void MainWindow::showAboutQt()
-{
+void MainWindow::showAboutQt() {
     QMessageBox::aboutQt(this, "Optiom");
 }
 
-QString MainWindow::makeGroupName(const QString groupName)
-{
-    return (groupName == "General") ? "" : (groupName + "/");
+QString MainWindow::makeGroupName(QString groupName) {
+    return (groupName == "General") ? "" : (groupName.append("/"));
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete setting;
     delete settingWidget;
     delete ui;
