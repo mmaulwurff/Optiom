@@ -33,7 +33,6 @@ private:
     static QStringList& addFiles(QString path, QStringList& list);
 
     QString getSelectedFilePath() const;
-
 };
 
 #endif // MAINWINDOW_H

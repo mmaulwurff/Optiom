@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget * const parent) :
     ui->treeView->hideColumn(2);
     ui->treeView->setColumnWidth(0, 150);
 
+    settingWidget = new QLabel("\n      Choose a file to edit.", ui->scrollArea);
+
     connect(ui->treeView, &QTreeView::activated, ui->treeView, &QTreeView::clicked);
     connect(ui->treeView, &QTreeView::clicked,
             [=](const QModelIndex & index) {
@@ -43,7 +45,9 @@ MainWindow::MainWindow(QWidget * const parent) :
     });
 
     connect(ui->actionReload, &QAction::triggered,
-            [=]() { loadSetting(getSelectedFilePath()); });
+            [=]() {
+        loadSetting(getSelectedFilePath());
+    });
 
     connect(ui->action_Backup, &QAction::triggered,
             [=]() {
@@ -53,6 +57,7 @@ MainWindow::MainWindow(QWidget * const parent) :
             QFile::remove(backupName);
         }
         QFile::copy(fileName, backupName);
+        ui->action_Restore->setEnabled(true);
         ui->statusBar->showMessage(tr("Backup \"%1\" created.").arg(backupName));
     });
     connect(ui->action_Restore, &QAction::triggered,
@@ -101,34 +106,34 @@ void MainWindow::loadSetting(const QString fileName) {
 
             const QString type = key.left(3);
             const QString keyName = makeGroupName(groupName) + key;
+
             if (type == "num" || type == "per") {
                 QSpinBox * const spinBox = new QSpinBox;
-                spinBox->setMaximum((type == "per") ? 100 : std::numeric_limits<int>::max());
-                spinBox->setValue(setting->value(key).toInt());
-                connect(spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-                        [=](const int newValue) {
-                    setting->setValue(keyName, newValue);
+                if (type == "per") {
+                    spinBox->setSuffix("%");
+                    spinBox->setMaximum(100);
+                } else {
+                    spinBox->setMaximum(std::numeric_limits<int>::max());
+                }
+                spinBox->setValue(setting->value(key, 0).toInt());
+                connect(spinBox, &QSpinBox::editingFinished,
+                        [=]() {
+                    setting->setValue(keyName, spinBox->value());
                 });
                 lineLayout->addWidget(spinBox);
             } else if (type == "is_") {
                 QCheckBox * const checkBox = new QCheckBox;
-                checkBox->setChecked(setting->value(key).toBool());
-                connect(checkBox, &QCheckBox::stateChanged,
-                        [=](const int state) {
-                    setting->setValue(keyName, (state == Qt::Checked));
+                checkBox->setChecked(setting->value(key, false).toBool());
+                connect(checkBox, &QCheckBox::clicked,
+                        [=](const bool checked) {
+                    setting->setValue(keyName, checked);
                 });
                 lineLayout->addWidget(checkBox);
             } else if (type == "key") {
-                QLabel * const keyLabel = new QLabel(setting->value(key, NoKey).toString());
+                const QString oldValue = setting->value(key).toString();
+                QLabel * const keyLabel = new QLabel(oldValue == "" ? NoKey : oldValue);
+
                 QPushButton * const setButton = new QPushButton("Set");
-
-                QPushButton * const removeButton = new QPushButton("Remove");
-                connect(removeButton, &QPushButton::clicked,
-                        [=]() {
-                    setting->setValue(keyName, NoKey);
-                    keyLabel->setText(NoKey);
-                });
-
                 connect(setButton, &QPushButton::clicked,
                         [=]() {
                     const int newKey = KeyInputBox::GetKey(this);
@@ -139,15 +144,22 @@ void MainWindow::loadSetting(const QString fileName) {
                     }
                 });
 
+                QPushButton * const removeButton = new QPushButton("Remove");
+                connect(removeButton, &QPushButton::clicked,
+                        [=]() {
+                    setting->setValue(keyName, NoKey);
+                    keyLabel->setText(NoKey);
+                });
+
                 lineLayout->addWidget(keyLabel);
                 lineLayout->addWidget(setButton);
                 lineLayout->addWidget(removeButton);
-            } else {
+            } else { // text field
                 QLineEdit * const lineEdit = new QLineEdit(setting->value(key).toString());
                 lineEdit->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed));
-                connect(lineEdit, &QLineEdit::textEdited,
-                        [=](const QString &newValue) {
-                    setting->setValue(keyName, newValue);
+                connect(lineEdit, &QLineEdit::editingFinished,
+                        [=]() {
+                    setting->setValue(keyName, lineEdit->text());
                 });
                 lineLayout->addWidget(lineEdit);
             }
