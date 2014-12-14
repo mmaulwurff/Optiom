@@ -13,6 +13,7 @@ QString Symbol(const char letter) {
 
 const QString NoKey = "NoKey";
 
+/// Convert Qt::Key codes into strings.
 QString GetKeyString(const int key) {
     if (Qt::Key_F1 <= key && key <= Qt::Key_F35) {
         return F(key - Qt::Key_F1 + 1);
@@ -46,6 +47,7 @@ QString GetKeyString(const int key) {
     case Qt::Key_SysReq:    return "SysReq";
     case Qt::Key_Pause:     return "PauseBreak";
     case Qt::Key_NumLock:   return "NumLock";
+    case Qt::Key_CapsLock:  return "CapsLock";
 
     case Qt::Key_Return:
     case Qt::Key_Enter:     return "Enter";
@@ -56,6 +58,16 @@ QString GetKeyString(const int key) {
     case Qt::Key_Right:     return "Right";
 
     case Qt::Key_Search:    return "Search";
+
+    case Qt::Key_VolumeDown: return "VolumeDown";
+    case Qt::Key_VolumeUp:   return "VolumeUp";
+    case Qt::Key_VolumeMute: return "VolumeMute";
+
+    case Qt::Key_MediaPrevious: return "MediaPrevious";
+    case Qt::Key_MediaNext:     return "MediaNext";
+    case Qt::Key_MediaPause:    return "MediaPause";
+    case Qt::Key_MediaPlay:     return "MediaPlay";
+
     default: return NoKey;
     }
 }
