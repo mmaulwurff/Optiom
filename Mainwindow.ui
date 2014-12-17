@@ -89,11 +89,6 @@
     <string>&amp;Reload</string>
    </property>
   </action>
-  <action name="actionCopying">
-   <property name="text">
-    <string>&amp;Copying</string>
-   </property>
-  </action>
   <action name="actionAbout">
    <property name="text">
     <string>&amp;About Optiom</string>

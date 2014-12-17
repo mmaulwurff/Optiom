@@ -5,13 +5,15 @@
 #include <QtWidgets>
 
 const QString backupSuffix = ".backup";
+const int statusMessageDelay = 2000;
 
-MainWindow::MainWindow(QWidget * const parent) :
-    QMainWindow(parent),
+MainWindow::MainWindow() :
+    QMainWindow(),
     ui(new Ui::MainWindow),
     setting(nullptr),
     settingWidget(nullptr),
-    fileSystemModel(new QFileSystemModel)
+    fileSystemModel(new QFileSystemModel),
+    generalGroupName(tr("General"))
 {
     ui->setupUi(this);
     setWindowTitle(QDir::currentPath());
@@ -26,7 +28,7 @@ MainWindow::MainWindow(QWidget * const parent) :
     ui->treeView->hideColumn(2);
     ui->treeView->setColumnWidth(0, 150);
 
-    settingWidget = new QLabel("\n      Choose a file to edit.", ui->scrollArea);
+    settingWidget = new QLabel(tr("\n      Choose a file to edit."), ui->scrollArea);
 
     connect(ui->treeView, &QTreeView::activated, ui->treeView, &QTreeView::clicked);
     connect(ui->treeView, &QTreeView::clicked,
@@ -75,7 +77,7 @@ MainWindow::MainWindow(QWidget * const parent) :
         if (settingsFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QString contents(settingsFile.readAll());
             QApplication::clipboard()->setText(contents);
-            ui->statusBar->showMessage("File is copied to clipboard.", 2000);
+            ui->statusBar->showMessage(tr("File is copied to clipboard."), statusMessageDelay);
         }
     });
 
@@ -94,9 +96,9 @@ void MainWindow::loadSetting(const QString fileName) {
     delete setting;
     setting = new QSettings(fileName, QSettings::IniFormat);
 
-    const QStringList groups = QStringList("General") << setting->childGroups();
+    const QStringList groups = QStringList(generalGroupName) << setting->childGroups();
     for (const QString groupName : groups) {
-        if (groupName != "General") setting->beginGroup(groupName);
+        if (groupName != generalGroupName) setting->beginGroup(groupName);
         if (groups.size() != 1) layout->addWidget(new QLabel("<h1>" + groupName + "</h1>"));
 
         for (const QString key : setting->childKeys()) {
@@ -133,7 +135,7 @@ void MainWindow::loadSetting(const QString fileName) {
                 const QString oldValue = setting->value(key).toString();
                 QLabel * const keyLabel = new QLabel(oldValue == "" ? NoKey : oldValue);
 
-                QPushButton * const setButton = new QPushButton("Set");
+                QPushButton * const setButton = new QPushButton(tr("Set"));
                 connect(setButton, &QPushButton::clicked,
                         [=]() {
                     const int newKey = KeyInputBox::GetKey(this);
@@ -144,7 +146,7 @@ void MainWindow::loadSetting(const QString fileName) {
                     }
                 });
 
-                QPushButton * const removeButton = new QPushButton("Remove");
+                QPushButton * const removeButton = new QPushButton(tr("Remove"));
                 connect(removeButton, &QPushButton::clicked,
                         [=]() {
                     setting->setValue(keyName, NoKey);
@@ -176,21 +178,21 @@ void MainWindow::loadSetting(const QString fileName) {
     ui->scrollArea->setWidget(settingWidget);
     ui->scrollArea->setWidgetResizable(true);
 
-    ui->statusBar->showMessage(QString("File \"%1\" loaded.").arg(fileName), 2000);
+    ui->statusBar->showMessage(tr("File \"%1\" loaded.").arg(fileName), statusMessageDelay);
 }
 
 void MainWindow::showAbout() {
     QFile readmeFile(":/README.md");
     readmeFile.open(QIODevice::ReadOnly | QIODevice::Text);
-    QMessageBox::about(this, "About Optiom", readmeFile.readAll());
+    QMessageBox::about(this, tr("Optiom, version %1").arg(VER), readmeFile.readAll());
 }
 
 void MainWindow::showAboutQt() {
-    QMessageBox::aboutQt(this, "Optiom");
+    QMessageBox::aboutQt(this);
 }
 
-QString MainWindow::makeGroupName(QString groupName) {
-    return (groupName == "General") ? "" : (groupName.append("/"));
+QString MainWindow::makeGroupName(QString groupName) const {
+    return (groupName == generalGroupName) ? "" : (groupName.append("/"));
 }
 
 MainWindow::~MainWindow() {

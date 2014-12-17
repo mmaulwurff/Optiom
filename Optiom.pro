@@ -11,6 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Optiom
 TEMPLATE = app
 
+VERSION = 0.1
+DEFINES += VER=$$VERSION
+
 QMAKE_CXXFLAGS += -std=c++11 -Wall -pedantic
 
 SOURCES += main.cpp\
@@ -25,3 +28,6 @@ FORMS    += Mainwindow.ui
 
 RESOURCES += \
     resources.qrc
+
+TRANSLATIONS += \
+    optiom_ru.ts \

@@ -10,12 +10,11 @@ class MainWindow;
 class QSettings;
 class QFileSystemModel;
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+     MainWindow();
     ~MainWindow();
 
 private slots:
@@ -28,9 +27,10 @@ private:
     QSettings * setting;
     QWidget * settingWidget;
     QFileSystemModel * const fileSystemModel;
+    const QString generalGroupName;
 
-    static QString makeGroupName(QString groupName);
-    static QStringList& addFiles(QString path, QStringList& list);
+    QString makeGroupName(QString groupName) const;
+    static QStringList & addFiles(QString path, QStringList & list);
 
     QString getSelectedFilePath() const;
 };

@@ -4,16 +4,16 @@
 #include <QMessageBox>
 
 class KeyInputBox : public QMessageBox {
+    Q_OBJECT
 public:
-    KeyInputBox(QWidget * parent);
-
-    int Key() const { return key; }
-
     static int GetKey(QWidget * parent);
+
 protected:
-    void keyPressEvent(QKeyEvent * event) override;
+    void keyPressEvent(QKeyEvent *) override;
 
 private:
+    KeyInputBox(QWidget * parent);
+
     int key;
 };
 
